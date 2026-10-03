@@ -57,13 +57,13 @@ jobs:
             target: google_apis_ps16k
             profile: pixel_7
             ram: 4096M
-            options: -no-window -gpu software -no-snapshot -noaudio -no-boot-anim -no-metrics -verbose -logcat '*:e'
+            options: -no-window -gpu software -no-snapshot -noaudio -no-boot-anim -no-metrics
             launch: |
-              rg '^target=' "$HOME/.android/avd/test.ini" "$HOME/.android/avd/test.avd/config.ini"
-              rg -q '^target=android-37(\.2)?(-ext[0-9]+)?$' "$HOME/.android/avd/test.ini"
-              rg -q '^target=android-37(\.2)?(-ext[0-9]+)?$' "$HOME/.android/avd/test.avd/config.ini"
-              rg '^image.sysdir.1=' "$HOME/.android/avd/test.avd/config.ini"
-              rg -q '^image.sysdir.1=.*system-images/android-37\.2/google_apis_ps16k/x86_64/?$' "$HOME/.android/avd/test.avd/config.ini"
+              grep '^target=' "$HOME/.android/avd/test.ini" "$HOME/.android/avd/test.avd/config.ini"
+              grep -Eq '^target=android-37(\.2)?(-ext[0-9]+)?$' "$HOME/.android/avd/test.ini"
+              grep -Eq '^target=android-37(\.2)?(-ext[0-9]+)?$' "$HOME/.android/avd/test.avd/config.ini"
+              grep '^image.sysdir.1=' "$HOME/.android/avd/test.avd/config.ini"
+              grep -Eq '^image.sysdir.1=.*system-images/android-37\.2/google_apis_ps16k/x86_64/?$' "$HOME/.android/avd/test.avd/config.ini"
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -102,7 +102,9 @@ jobs:
           arch: x86_64
           disk-size: 2048M
           disable-animations: true
-          script: ./gradlew :charts-compose:connectedDebugAndroidTest
+          script: |
+            test "$(adb shell getprop ro.build.version.sdk | tr -d '\r')" = "${{ matrix.api }}"
+            ./gradlew :charts-compose:connectedDebugAndroidTest
       - name: Verify device test execution
         run: python3 scripts/check-device-results.py
       - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
