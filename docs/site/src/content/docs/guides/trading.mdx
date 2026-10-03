@@ -1,0 +1,110 @@
+---
+title: Trading charts
+description: Link candle, indicator, volume, and order book charts with consistent market data.
+---
+
+Use one X unit and one timestamp per candle. `Candle(x, open, high, low, close, volume)` validates OHLC bounds and finite values; `CandleSeries` requires strictly increasing timestamps. Keep exact monetary calculations in your domain model.
+
+## Link price and volume
+
+Compute the EMA and volume snapshots in your ViewModel or processing pipeline. This complete composable accepts those prepared snapshots and shares the viewport and selected timestamp across both panels.
+
+```kotlin
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
+import com.joelromanpr.charts.compose.AxisFormatter
+import com.joelromanpr.charts.compose.CartesianChart
+import com.joelromanpr.charts.compose.ChartAxes
+import com.joelromanpr.charts.compose.ChartLayer
+import com.joelromanpr.charts.compose.ChartTheme
+import com.joelromanpr.charts.compose.rememberChartState
+import com.joelromanpr.charts.core.CandleSeries
+import com.joelromanpr.charts.core.PointSeries
+
+@Composable
+fun TradingPanels(candles: CandleSeries, ema: PointSeries, volume: PointSeries) {
+    val state = rememberChartState()
+    val priceLayers = remember(candles, ema) {
+        listOf(ChartLayer.Candles(candles), ChartLayer.Line(ema, name = "EMA 20"))
+    }
+    val volumeLayers = remember(volume) { listOf(ChartLayer.Columns(volume)) }
+    val priceAxes = remember {
+        ChartAxes(showX = false, yFormatter = AxisFormatter.decimal("#,##0.00"))
+    }
+    val volumeAxes = remember {
+        ChartAxes(yFormatter = AxisFormatter.decimal("#,##0"))
+    }
+    ChartTheme {
+        Column {
+            CartesianChart(
+                layers = priceLayers,
+                modifier = Modifier.fillMaxWidth().height(280.dp),
+                state = state, axes = priceAxes, showLegend = true,
+                contentDescription = "Candle price and exponential average",
+            )
+            CartesianChart(
+                layers = volumeLayers,
+                modifier = Modifier.fillMaxWidth().height(120.dp),
+                state = state, axes = volumeAxes,
+                contentDescription = "Traded volume",
+            )
+        }
+    }
+}
+```
+
+For two scales within one plot, put a layer on `AxisSide.Right`; customize `ChartAxes.rightYFormatter` or supply `rightYRange`. Separate panels keep price and volume easier to read.
+
+## Prepare an indicator
+
+This processing function produces the arguments for `TradingPanels`. Run it off the UI thread for large histories.
+
+```kotlin
+import com.joelromanpr.charts.core.CandleSeries
+import com.joelromanpr.charts.core.Indicators
+import com.joelromanpr.charts.core.Point
+import com.joelromanpr.charts.core.PointSeries
+
+data class TradingData(val candles: CandleSeries, val ema: PointSeries, val volume: PointSeries)
+
+fun prepareTradingData(candles: CandleSeries): TradingData = TradingData(
+    candles = candles,
+    ema = Indicators.ema(candles, period = 20),
+    volume = PointSeries(candles.candles.map { Point(it.x, it.volume) }, "Volume"),
+)
+```
+
+SMA, EMA, and Bollinger bands first emit after a complete period. EMA seeds from the period's SMA. RSI uses Wilder smoothing and starts after `period` price changes; flat prices return 50. MACD has separate slow-average and signal warm-up periods. VWAP is cumulative typical-price VWAP; start a new series for a new session, and zero-volume prefixes emit no values.
+
+Warm-up output can be empty. Preserve indicator timestamps rather than shifting points to fill that gap. Indicators reject numeric ranges that cannot retain finite precision.
+
+## Show order book liquidity
+
+Supply **raw quantities**: bids descending by price, asks ascending. Prices must be positive and unique within each side; the best bid cannot exceed the best ask. `DepthChart` computes cumulative quantities.
+
+```kotlin
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
+import com.joelromanpr.charts.compose.ChartTheme
+import com.joelromanpr.charts.compose.DepthChart
+import com.joelromanpr.charts.core.DepthLevel
+import com.joelromanpr.charts.core.OrderBook
+
+@Composable
+fun LiquidityChart() {
+    val book = remember {
+        OrderBook(
+            bids = listOf(DepthLevel(100.0, 2.0), DepthLevel(99.0, 3.0)),
+            asks = listOf(DepthLevel(101.0, 4.0), DepthLevel(102.0, 1.0)),
+        )
+    }
+    ChartTheme { DepthChart(book) }
+}
+```
+
+For live trading feeds, replace forming candles and publish bounded snapshots as described in [live data](../live-data/).

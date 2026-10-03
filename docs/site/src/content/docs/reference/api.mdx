@@ -1,0 +1,85 @@
+---
+title: API guide
+description: The main contracts for immutable data, chart layers, state, and customization.
+---
+
+Kotlin types live in `com.joelromanpr.charts.core` and `com.joelromanpr.charts.compose`. The Maven group is `io.github.joelromanpr.charts`. **2.0.0 is available on Maven Central**; see [getting started](/jetpack-charts/getting-started/) for installation.
+
+## Immutable data
+
+Construct a new snapshot when your display data changes. Series copy their input lists, validate numeric inputs, and retain their own ordered data.
+
+| Type | Contract |
+| --- | --- |
+| `Point(x, y)` | Both coordinates are finite `Double` values. |
+| `PointSeries(points, name)` | X is strictly increasing. Empty series are valid. |
+| `Candle(x, open, high, low, close, volume)` | Finite prices; high and low contain open and close; volume is finite and nonnegative. |
+| `CandleSeries(candles, name)` | Candle X is strictly increasing. Empty series are valid. |
+| `OrderBook(bids, asks)` | Positive prices and raw nonnegative quantities; bids descend, asks ascend, and best bid does not exceed best ask. |
+| `HeatmapData(xLabels, yLabels, values)` | Finite, rectangular, row-major values matching both label lists. |
+| `RadarSeries(name, values, color)` | Finite, nonnegative values; chart labels and `maxValue` supply the shared scale. |
+
+Duplicate timestamps belong in an update to the last sample, rather than an additional point. Preserve `Double` precision until rendering; convert accounting values into display values at your app's boundary.
+
+Sources: [core models](https://github.com/joelromanpr/jetpack-charts/blob/main/charts-core/src/main/kotlin/com/joelromanpr/charts/core/Models.kt), [matrix models](https://github.com/joelromanpr/jetpack-charts/blob/main/charts-compose/src/main/kotlin/com/joelromanpr/charts/compose/MatrixCharts.kt).
+
+## Layers and axes
+
+`CartesianChart` combines `ChartLayer.Line`, `Columns`, `Candles`, and `Scatter`. Every layer has a name and an `AxisSide`; the default is `Left`.
+
+| Option | Use |
+| --- | --- |
+| `Line.interpolation` | `Linear`, `Cubic`, `Step` (change at the next X), or `StepBefore` (change at the previous X). |
+| `Line.fill` | Fill the area below the line to the plot's bottom edge. |
+| `Columns.stackKey` | Equal non-null keys stack positive and negative values independently; other column layers are grouped. |
+| `axis = AxisSide.Right` | Bind a layer to an independent right-hand value scale. |
+| `ChartAxes` | Control ticks, grid, axis visibility, formatter callbacks, text style, and label space. |
+| `yRange`, `rightYRange` | Override the visible data's automatic value ranges. |
+| `referenceLines` | Add `ReferenceLine(y, label, color, dashed, axis)` values. |
+| `showLegend`, `showSelectionTooltip` | Enable the built-in legend or control the selection readout. |
+
+Use `AxisFormatter.decimal(pattern)` for numeric labels or `AxisFormatter { value -> ... }` for app-specific formatting. X formatters receive the original X value: choose a timestamp unit consistently across your feed, state, and formatter. Remember custom axes and formatters when their configuration is unchanged.
+
+The convenience functions `LineChart`, `ColumnChart`, `CandlestickChart`, and `ScatterChart` cover common views. Use `CartesianChart` for layers, explicit ranges, reference lines, animation, or decorations. [Chart recipes](/jetpack-charts/charts/) show how the options fit together.
+
+Sources: [layer and axis options](https://github.com/joelromanpr/jetpack-charts/blob/main/charts-compose/src/main/kotlin/com/joelromanpr/charts/compose/ChartModels.kt), [Cartesian chart](https://github.com/joelromanpr/jetpack-charts/blob/main/charts-compose/src/main/kotlin/com/joelromanpr/charts/compose/CartesianChart.kt), [convenience charts](https://github.com/joelromanpr/jetpack-charts/blob/main/charts-compose/src/main/kotlin/com/joelromanpr/charts/compose/ChartComposables.kt).
+
+## Shared state and selection
+
+`rememberChartState(initialXRange)` saves viewport, selection, and following mode across state restoration. Hoist one state to link charts with compatible X domains.
+
+| State operation | Effect |
+| --- | --- |
+| `setViewport(ChartRange(min, max))` | Request an X window and disable following. Rendering bounds it to available data. |
+| `setViewport(null)` | Show the full X domain and enable following. |
+| `followLatest()` | Keep the current visible span at the newest data when the domain next updates. |
+| `select(x)` / `select(null)` | Set or clear the shared selection. |
+| `reset()` | Show the full domain, clear selection, and enable following. |
+
+Read `visibleXRange`, `selectedX`, and `isFollowingLatest` to reflect state in your controls. Horizontal panning disables following; your app can expose a “Live” button that calls `followLatest()`.
+
+`onSelectionChanged` receives a `ChartSelection?` from chart interaction. A selection contains its snapped X and nearest original samples, with each value's layer index, name, axis, and `point` or `candle`. Layers with different timestamps can return samples at different X values. Calling `state.select()` updates the display without invoking that callback.
+
+`HeatmapChart.onCellSelected` receives `(row, column)`. Pie and donut selection callbacks receive an index or `null`; their selection state is internal.
+
+Sources: [chart state](https://github.com/joelromanpr/jetpack-charts/blob/main/charts-compose/src/main/kotlin/com/joelromanpr/charts/compose/ChartState.kt), [selection](https://github.com/joelromanpr/jetpack-charts/blob/main/charts-compose/src/main/kotlin/com/joelromanpr/charts/compose/ChartSelection.kt).
+
+## Theme and extensions
+
+`ChartTheme` follows system appearance and has no Material dependency. Pass `ChartColors.light()`, `dark()`, or a copied palette to choose an explicit appearance. Read `LocalChartColors.current` for custom content; the series palette must contain at least one color. Pie, donut, radar, and heatmap backgrounds remain transparent, so their host surface determines the background.
+
+Default layer colors come from `series`; changing `primary` alone keeps those palette colors. The [theming guide](/jetpack-charts/guides/theming/) shows a complete brand override.
+
+`ChartAnimation.None` is the default. `ChartAnimation.Reveal(durationMillis)` reveals a Cartesian chart when it enters with nonempty data; it respects system animator duration scale. It does not animate every streaming update.
+
+`decoration` is a `DrawScope.(ChartCoordinates) -> Unit` callback. Draw using `coordinates.x(value)` and `coordinates.y(value, axis)` to share the chart's transforms. Decorations run while drawing and are clipped to the plot; keep their work small and cache expensive calculations in your app.
+
+Sources: [theme](https://github.com/joelromanpr/jetpack-charts/blob/main/charts-compose/src/main/kotlin/com/joelromanpr/charts/compose/ChartTheme.kt), [extensions](https://github.com/joelromanpr/jetpack-charts/blob/main/charts-compose/src/main/kotlin/com/joelromanpr/charts/compose/ChartModels.kt).
+
+## Live data and indicators
+
+`RollingPointBuffer` and `RollingCandleBuffer` keep bounded, thread-safe histories. `append` adds a newer X, `replaceLast` updates the current sample at the same X, and `snapshot()` returns an immutable series, reused until the buffer changes.
+
+`Indicators` provides `sma`, `ema`, `rsi`, `bollingerBands`, `macd`, and `vwap` from `CandleSeries`. Warm-up samples are omitted. Compute indicators and publish snapshots in your data layer; collect them with your app's lifecycle-aware state flow. Follow the [trading guide](/jetpack-charts/guides/trading/) for the integration pattern.
+
+Sources: [rolling buffers](https://github.com/joelromanpr/jetpack-charts/blob/main/charts-core/src/main/kotlin/com/joelromanpr/charts/core/RollingBuffers.kt), [indicators](https://github.com/joelromanpr/jetpack-charts/blob/main/charts-core/src/main/kotlin/com/joelromanpr/charts/core/Indicators.kt).
