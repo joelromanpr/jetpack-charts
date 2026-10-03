@@ -1,0 +1,31 @@
+---
+title: Releases
+description: Versioning, immutable tags, Maven Central publication, and the next development cycle.
+---
+
+## Version policy
+
+The first version is **2.0.0**. Patches fix behavior, minor versions add compatible APIs, and major versions change public contracts. Published artifacts and `v*` release tags are immutable.
+
+`main` follows the next development version, currently **2.1.0-SNAPSHOT**. Installation guides target **2.0.0**, available on Maven Central. A snapshot on `main` does not replace a published release.
+
+## Maintainer checklist
+
+1. Update `VERSION_NAME`, the changelog, and intentional API baselines. Run the contribution checks; CI must pass on Android API 23, 36, and 37.
+2. Merge to `main`, then create an annotated `vX.Y.Z` tag matching `VERSION_NAME`. Prepare concise GitHub release notes.
+3. Dispatch **Stage release** from that tag. The workflow checks the tag, ancestry, version, and absence of the coordinates in Central before running verification and signing.
+4. Review the signed deployment in Central Portal and publish it. Verify both public POMs and build a separate Android consumer using `mavenCentral()`.
+5. Publish the GitHub release, update the README and site's installation version, then move `main` to the next `-SNAPSHOT` through a pull request.
+
+Use the [canonical release checklist](https://github.com/joelromanpr/jetpack-charts/blob/main/docs/RELEASING.md) for the exact commands and private publishing setup. The Maven environment accepts release tags. Configure maintainer review for automated uploads; credentials stay in environment secrets. Central Portal also supports a reviewed, signed bundle upload.
+
+## Artifacts
+
+| Artifact | Purpose |
+| --- | --- |
+| `io.github.joelromanpr.charts:charts-compose` | Android rendering and a transitive dependency on core |
+| `io.github.joelromanpr.charts:charts-core` | Kotlin/JVM data models and calculations |
+
+Both artifacts use the same version. Kotlin imports start with `com.joelromanpr.charts`.
+
+See [release notes](https://github.com/joelromanpr/jetpack-charts/releases) and the [changelog](https://github.com/joelromanpr/jetpack-charts/blob/main/CHANGELOG.md).

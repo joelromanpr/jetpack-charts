@@ -1,0 +1,89 @@
+---
+title: Getting started
+description: Add Jetpack Charts to an Android app and draw your first Compose chart.
+---
+
+Jetpack Charts separates immutable Kotlin data from Compose rendering. Start with `charts-compose`; it includes `charts-core` transitively.
+
+## Install
+
+Version **[2.0.0 is available on Maven Central](https://central.sonatype.com/artifact/io.github.joelromanpr.charts/charts-compose/2.0.0)**. The Compose artifact includes core transitively.
+
+Add repositories in your project's `settings.gradle.kts`:
+
+```kotlin
+dependencyResolutionManagement {
+    repositories {
+        google()
+        mavenCentral()
+    }
+}
+```
+
+Add the Compose artifact in your app's `build.gradle.kts`:
+
+```kotlin
+dependencies {
+    implementation("io.github.joelromanpr.charts:charts-compose:2.0.0")
+}
+```
+
+For data, sampling, and indicators without Android, use `io.github.joelromanpr.charts:charts-core:2.0.0` instead.
+
+Version **2.0.0** supports Android API **23+**, JDK **17**, and Kotlin **2.2.20+** with the Kotlin Compose compiler plugin. Its artifacts use Compose **1.9**. Align your app's dependencies with a compatible Compose BOM; the library does not require Material.
+
+The next development cycle on `main` uses Kotlin **2.4.20**, Compose **1.12.1** (BOM **2026.09.00**), and compile SDK **37**, while keeping the Android API 23 minimum.
+
+## Draw a price chart
+
+This complete composable creates one immutable snapshot and remembers it across recompositions:
+
+```kotlin
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
+import com.joelromanpr.charts.compose.ChartTheme
+import com.joelromanpr.charts.compose.LineChart
+import com.joelromanpr.charts.core.Point
+import com.joelromanpr.charts.core.PointSeries
+
+@Composable
+fun FirstPriceChart() {
+    val prices = remember {
+        PointSeries(
+            listOf(Point(0.0, 184.0), Point(1.0, 187.5), Point(2.0, 186.2)),
+            name = "Price",
+        )
+    }
+    ChartTheme {
+        LineChart(prices, Modifier.fillMaxWidth().height(240.dp))
+    }
+}
+```
+
+`ChartTheme` follows the system's light or dark appearance. Give charts a meaningful height, including space for axes. Wrap a group of charts in one theme when you embed them in a screen.
+
+## Supply clean data
+
+- X values must be finite and **strictly increasing**. Pick one unit, such as epoch milliseconds, and use it consistently across linked charts.
+- Y values must be finite. Empty snapshots are valid and show the empty state.
+- Snapshots defensively copy their input lists. Publish a new snapshot when data changes.
+- Keep decimal accounting values in your application's domain model; convert to `Double` for display.
+
+Tap to select, hold to inspect, drag horizontally to pan, and pinch to zoom. Keyboard and accessibility actions expose selection, zoom, and reset.
+
+## Choose the next chart
+
+| Need | API |
+| --- | --- |
+| Prices and small trends | `LineChart`, `Sparkline` |
+| Volume and grouped or stacked bars | `ColumnChart`, `ChartLayer.Columns` |
+| OHLC and multiple series | `CandlestickChart`, `CartesianChart` |
+| Order book liquidity | `DepthChart` |
+| Allocation and activity | `PieChart`, `DonutChart`, `HeatmapChart` |
+| Factors and observations | `RadarChart`, `ScatterChart` |
+
+Continue with [live data](../guides/live-data/), [trading panels](../guides/trading/), or [theming](../guides/theming/).

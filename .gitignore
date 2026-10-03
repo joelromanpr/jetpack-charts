@@ -39,3 +39,8 @@ google-services.json
 *.asc
 *.gpg
 outputs/
+
+# Documentation site
+node_modules/
+docs/site/.astro/
+docs/site/dist/

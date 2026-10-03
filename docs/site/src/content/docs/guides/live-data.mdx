@@ -1,0 +1,91 @@
+---
+title: Live data
+description: Publish bounded immutable snapshots without rebuilding chart data during recomposition.
+---
+
+Keep feed ownership and data processing in your ViewModel or repository. Pass immutable snapshots to the UI. A rolling buffer limits memory while the renderer limits dense geometry to the available screen space.
+
+## Keep a bounded window
+
+This complete feed adapter exposes observable snapshots. Call `update` from your feed pipeline; the synchronized method keeps the timestamp check and update together.
+
+```kotlin
+import com.joelromanpr.charts.core.Point
+import com.joelromanpr.charts.core.PointSeries
+import com.joelromanpr.charts.core.RollingPointBuffer
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+
+class PriceWindow(capacity: Int = 2_000) {
+    private val buffer = RollingPointBuffer(capacity, name = "Price")
+    private var latestX: Double? = null
+    private val mutableSnapshots = MutableStateFlow(buffer.snapshot())
+    val snapshots: StateFlow<PointSeries> = mutableSnapshots.asStateFlow()
+
+    @Synchronized
+    fun update(point: Point) {
+        if (point.x == latestX) buffer.replaceLast(point)
+        else buffer.append(point)
+        latestX = point.x
+        mutableSnapshots.value = buffer.snapshot()
+    }
+}
+```
+
+`append` requires a timestamp newer than the latest sample. `replaceLast` requires the same timestamp and updates its current value. Filter or reconcile out-of-order messages in your feed pipeline before calling this adapter.
+
+Unchanged `snapshot()` calls reuse the same immutable instance. `revision` advances after meaningful buffer changes. The buffer itself is thread-safe; a sequence of reads and writes still needs one serialized owner, as above.
+
+## Collect with the screen lifecycle
+
+The following screen uses `PriceWindow` from the previous example. Add AndroidX `lifecycle-runtime-compose` through your app's dependency catalog for `collectAsStateWithLifecycle`; Kotlin coroutines provide `StateFlow`.
+
+```kotlin
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.joelromanpr.charts.compose.ChartTheme
+import com.joelromanpr.charts.compose.LineChart
+import com.joelromanpr.charts.compose.rememberChartState
+
+@Composable
+fun LivePriceChart(window: PriceWindow) {
+    val prices by window.snapshots.collectAsStateWithLifecycle()
+    val state = rememberChartState()
+    ChartTheme {
+        LineChart(
+            series = prices,
+            modifier = Modifier.fillMaxWidth().height(240.dp),
+            state = state,
+        )
+    }
+}
+```
+
+Stopping lifecycle collection does not automatically disconnect a WebSocket. Your ViewModel or repository decides when the feed starts, pauses, and reconnects.
+
+## Update forming candles
+
+Use `RollingCandleBuffer` for OHLC data. `replaceLast` replaces the entire forming candle, including its latest high, low, close, and volume. `append` starts the next candle. Prices must be finite, volume nonnegative, and high/low must contain open/close.
+
+Choose buffer capacity in **samples**, not elapsed time. A window of 2,000 one-minute candles spans a different duration from 2,000 individual trades.
+
+## Preserve the reader's context
+
+Hoist `rememberChartState()` so updates retain selection and viewport. A normal reset shows the full available domain. To follow the newest data while keeping a visible span, set the viewport and call `followLatest()`; it advances when newer data arrives. Manual panning stops following.
+
+Do not call `reset()` on every snapshot. Keep one X unit across price, volume, and indicators when sharing state between panels.
+
+## Publish at a useful cadence
+
+- Convert and validate feed messages off the UI thread.
+- Batch bursts before publishing a snapshot; buffer operations do not throttle your producer.
+- Compute indicators outside composition, or `remember` them by the immutable snapshot for small workloads.
+- Keep animation disabled for frequent market updates. `ChartAnimation.None` is the default.
+
+The renderer caches paths and searches the original samples for selection. Sampling reduces drawn geometry while preserving line extrema; it does not replace your feed storage or export data.

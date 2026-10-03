@@ -63,7 +63,8 @@ internal fun adjacentX(layers: List<ChartLayer>, selectedX: Double?, forward: Bo
         val index = if (forward) low else low - 1
         if (index in 0 until count) {
             val next = xAt(index)
-            if (candidate == null || if (forward) next < candidate!! else next > candidate!!) candidate = next
+            val previous = candidate
+            if (previous == null || if (forward) next < previous else next > previous) candidate = next
         }
     }
     return candidate

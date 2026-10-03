@@ -1,0 +1,50 @@
+---
+title: Charts that keep up.
+description: Beautiful Compose charts for live markets, portfolio insights, and commerce.
+template: splash
+hero:
+  title: Charts that keep up.
+  tagline: Native Compose charts for live markets, portfolio insights, and commerce. A small, expressive API. Room to make it yours.
+  actions:
+    - text: Get started
+      link: /jetpack-charts/getting-started/
+      icon: right-arrow
+    - text: Explore the charts
+      link: /jetpack-charts/examples/
+      variant: minimal
+---
+
+import { Card, CardGrid } from '@astrojs/starlight/components';
+import ChartExplorer from '../../components/ChartExplorer.astro';
+import SampleGallery from '../../components/SampleGallery.astro';
+
+<div className="release-strip"><span>2.0.0</span> Apache 2.0 <span aria-hidden="true">·</span> Android 6.0+ <span aria-hidden="true">·</span> Kotlin + Compose</div>
+
+<ChartExplorer />
+
+## From the first point to a live market
+
+<CardGrid>
+  <Card title="Built for changing data" icon="bars">
+    Bounded rolling buffers, immutable snapshots, and visible-range rendering keep growing feeds manageable.
+  </Card>
+  <Card title="Trading is a first-class use case" icon="rocket">
+    Candles, volume, depth, and six indicators. Link the viewport and crosshair across price and indicator panels.
+  </Card>
+  <Card title="Fits your app" icon="pencil">
+    Semantic light and dark colors, custom axes, reference lines, and decorations. No Material dependency in the library.
+  </Card>
+  <Card title="More than a picture" icon="approve-check">
+    Pan, pinch, inspect, and reset. Keyboard controls and accessibility actions give users more ways to explore.
+  </Card>
+</CardGrid>
+
+Start with a [line chart](/jetpack-charts/getting-started/), build a [trading screen](/jetpack-charts/guides/trading/), or [contribute a focused improvement](/jetpack-charts/community/contributing/).
+
+## Made for the app in your hand
+
+Real screenshots from the 2.0.0 native Compose gallery, using simulated market data. The library follows your app's theme from the first frame.
+
+<SampleGallery />
+
+[Run the sample](/jetpack-charts/examples/#run-the-compose-gallery) to explore linked panels and live updates on your device.

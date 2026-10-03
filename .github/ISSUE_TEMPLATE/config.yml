@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Questions and integration help
+    url: https://github.com/joelromanpr/jetpack-charts/discussions
+    about: Ask usage questions and share chart ideas with the community.
+  - name: Security reports
+    url: https://github.com/joelromanpr/jetpack-charts/security/advisories/new
+    about: Report vulnerabilities privately to the maintainer.

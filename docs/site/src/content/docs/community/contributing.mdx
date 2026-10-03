@@ -1,0 +1,42 @@
+---
+title: Contributing
+description: Set up the project, validate a focused change, and submit a pull request.
+---
+
+## Set up
+
+Fork [the repository](https://github.com/joelromanpr/jetpack-charts), clone your fork, and open it in Android Studio. Use **JDK 17**, **Android SDK 37**, and **Python 3** for verification helpers; the checked-in wrapper handles Gradle.
+
+```sh
+git switch -c feat/price-marker
+./gradlew :sample:assembleDebug
+```
+
+Create short-lived branches from `main`. Open an issue before adding a chart family or changing a public contract. Questions and design ideas belong in [Discussions](https://github.com/joelromanpr/jetpack-charts/discussions).
+
+## Keep the boundaries clear
+
+| Module | Responsibility |
+| --- | --- |
+| `charts-core` | Immutable models, indicators, buffers, and numeric algorithms; Kotlin/JVM only |
+| `charts-compose` | Rendering, theming, state, gestures, and accessibility; no Material dependency |
+| `sample` | Native examples and simulated live data |
+| `docs/site` | This site; Markdown guides and a small browser preview |
+
+Preserve API 23 compatibility, light and dark themes, and bounded rendering work. Add a focused regression check for behavior and a sample for visual changes. Review intentional API changes with `./gradlew apiDump`.
+
+## Validate and submit
+
+```sh
+./scripts/check-surfaces.sh
+./gradlew :charts-core:test :charts-compose:testDebugUnitTest \
+  :charts-compose:lintRelease :sample:lintDebug :sample:assembleDebug apiCheck
+./gradlew :charts-compose:connectedDebugAndroidTest
+python3 scripts/check-device-results.py
+```
+
+Use Conventional Commits, for example `feat: add a price marker` or `docs: clarify linked charts`. Explain the user-visible change and relevant validation in your pull request. Maintainers squash merge after required CI checks pass; `main` stays protected.
+
+For site changes, use Node **22.12+**: `cd docs/site && npm ci && npm run check && npm run build`. `npm run dev` starts the local preview. Site builds check internal links and generate the search index; merged changes deploy through GitHub Pages.
+
+Contributions are licensed under Apache 2.0. Read the [Code of Conduct](https://github.com/joelromanpr/jetpack-charts/blob/main/CODE_OF_CONDUCT.md) and [security reporting instructions](https://github.com/joelromanpr/jetpack-charts/blob/main/SECURITY.md).

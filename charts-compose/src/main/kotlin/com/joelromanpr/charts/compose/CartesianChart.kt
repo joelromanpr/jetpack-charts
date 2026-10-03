@@ -207,7 +207,7 @@ public fun CartesianChart(
                 Key.DirectionLeft -> moveSelection(false)
                 Key.Plus, Key.Equals -> domain?.let { state.transform(it, 1.5f, 0f, 0.5f); true } ?: false
                 Key.Minus -> domain?.let { state.transform(it, 1 / 1.5f, 0f, 0.5f); true } ?: false
-                Key.Escape, Key.Home -> { state.reset(); currentOnSelection?.invoke(null); true }
+                Key.Escape, Key.MoveHome -> { state.reset(); currentOnSelection?.invoke(null); true }
                 else -> false
             }
         }.focusable() else Modifier

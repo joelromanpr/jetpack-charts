@@ -1,0 +1,27 @@
+---
+title: Explore the charts
+description: Try an interactive chart preview and open the native Compose sample.
+---
+
+import ChartExplorer from '../../components/ChartExplorer.astro';
+import SampleGallery from '../../components/SampleGallery.astro';
+
+<ChartExplorer />
+
+This browser preview uses synthetic data to illustrate chart families. The Android library renders with Compose Canvas; run the native sample to try its gestures, accessibility, and live updates.
+
+## Run the Compose gallery
+
+<SampleGallery />
+
+```sh
+git clone https://github.com/joelromanpr/jetpack-charts.git
+cd jetpack-charts
+./gradlew :sample:installDebug
+```
+
+Use JDK 17, Android SDK 37, and an emulator or device on Android 6.0+. Open **Jetpack Charts** after installation, or run the `sample` configuration in Android Studio.
+
+The gallery includes linked price, volume, and RSI panels, order book depth, portfolio allocation, stacked revenue, a heatmap, radar, and scatter plots. Its simulated feed pauses when the activity leaves the foreground.
+
+Choose a [chart recipe](/jetpack-charts/charts/) or learn to [publish live snapshots](/jetpack-charts/guides/live-data/).

@@ -1,0 +1,25 @@
+name: Bug report
+description: Report a reproducible rendering, data, or interaction issue.
+labels: [bug]
+body:
+  - type: input
+    id: version
+    attributes:
+      label: Library version
+      placeholder: 2.0.0
+    validations:
+      required: true
+  - type: input
+    id: environment
+    attributes:
+      label: Android and Compose versions
+      placeholder: Android API 36, Compose BOM 2026.09.00
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Reproduction
+      description: Include a small data set or sample, steps, expected behavior, and actual behavior. Screenshots help with visual issues.
+    validations:
+      required: true

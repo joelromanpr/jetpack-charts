@@ -1,0 +1,132 @@
+---
+title: Charts
+description: Choose a chart and build a focused view of prices, portfolios, or activity.
+---
+
+Start with a single chart. Use `CartesianChart` when price, volume, or indicators need to share a view. Every chart supports Android API 23 and above.
+
+Version **2.0.0 is available on Maven Central**. Follow [getting started](/jetpack-charts/getting-started/) to add it to your app.
+
+## Choose a chart
+
+| What you want to show | Use | Data |
+| --- | --- | --- |
+| Price or a filled trend | `LineChart` | `PointSeries` |
+| A compact trend in a list | `Sparkline` | `PointSeries` |
+| Open, high, low, and close | `CandlestickChart` | `CandleSeries` |
+| Price, volume, and indicators together | `CartesianChart` | `List<ChartLayer>` |
+| Grouped or stacked quantities | `ColumnChart`, `ChartLayer.Columns` | `PointSeries` |
+| Observations or events | `ScatterChart` | `PointSeries` |
+| Cumulative order book liquidity | `DepthChart` | `OrderBook` |
+| Portfolio allocation | `PieChart`, `DonutChart` | `List<Slice>` |
+| Activity across two dimensions | `HeatmapChart` | `HeatmapData` |
+| Factors on a shared scale | `RadarChart` | Labels and `List<RadarSeries>` |
+
+The following recipes belong inside your app's `ChartTheme`. It follows system light and dark appearance; use explicit `ChartColors` to match your brand.
+
+## Price and volume with independent scales
+
+Bind quantities to `AxisSide.Right` so their magnitude does not flatten the price chart. A translucent column color keeps both layers readable.
+
+```kotlin
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
+import com.joelromanpr.charts.compose.AxisFormatter
+import com.joelromanpr.charts.compose.AxisSide
+import com.joelromanpr.charts.compose.CartesianChart
+import com.joelromanpr.charts.compose.ChartAxes
+import com.joelromanpr.charts.compose.ChartLayer
+import com.joelromanpr.charts.compose.LocalChartColors
+import com.joelromanpr.charts.core.CandleSeries
+import com.joelromanpr.charts.core.Point
+import com.joelromanpr.charts.core.PointSeries
+
+@Composable
+fun PriceAndVolume(prices: CandleSeries) {
+    val colors = LocalChartColors.current
+    val volume = remember(prices) {
+        PointSeries(prices.candles.map { Point(it.x, it.volume) }, "Volume")
+    }
+    val layers = remember(prices, volume, colors) {
+        listOf(
+            ChartLayer.Columns(volume, color = colors.secondary.copy(alpha = 0.18f), axis = AxisSide.Right),
+            ChartLayer.Candles(prices),
+        )
+    }
+    val axes = remember {
+        ChartAxes(yFormatter = AxisFormatter.decimal("0.00"), rightYFormatter = AxisFormatter.decimal("#,##0"))
+    }
+    CartesianChart(
+        layers, Modifier.fillMaxWidth().height(280.dp), axes = axes,
+        showLegend = true, contentDescription = "Price and trading volume",
+    )
+}
+```
+
+For separate price and volume panels, pass the same `rememberChartState()` to both charts. Keep their X units and domains compatible. See [live trading](/jetpack-charts/guides/trading/) for linked panels and forming candles.
+
+## Portfolio allocation
+
+Slices are nonnegative relative weights; their total does not need to be 100. This example uses percentages, so its formatter appends `%`.
+
+```kotlin
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
+import com.joelromanpr.charts.compose.DonutChart
+import com.joelromanpr.charts.core.Slice
+
+@Composable
+fun PortfolioAllocation() {
+    DonutChart(
+        slices = listOf(Slice("Equities", 70.0), Slice("Cash", 30.0)),
+        modifier = Modifier.fillMaxWidth().height(240.dp),
+        valueFormatter = { "${it.toInt()}%" },
+    )
+}
+```
+
+Use `onSliceSelected` to receive a slice index or `null` when selection clears. The optional `center` slot accepts your own composable.
+
+## Activity by day
+
+`HeatmapData.values` is row-major: each inner list belongs to one Y label and contains one value for each X label.
+
+```kotlin
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
+import com.joelromanpr.charts.compose.HeatmapChart
+import com.joelromanpr.charts.compose.HeatmapData
+
+@Composable
+fun WeeklyActivity() {
+    val data = remember {
+        HeatmapData(
+            xLabels = listOf("Mon", "Tue", "Wed"),
+            yLabels = listOf("Orders", "Refunds"),
+            values = listOf(listOf(34.0, 51.0, 47.0), listOf(1.0, 4.0, 2.0)),
+        )
+    }
+    HeatmapChart(data, Modifier.fillMaxWidth().height(220.dp))
+}
+```
+
+Dense heatmaps average values into pixel-sized tiles; selection still reports the original row and column. For a normalized factor comparison, use `RadarChart` with at least three labels, a matching value per label, and an explicit `maxValue`.
+
+## Interaction
+
+Cartesian charts support horizontal pan, pinch zoom, tap selection, and long-press scrubbing. Double-tap resets the viewport. Vertical drags remain available to the surrounding scroll container. Keyboard arrows and accessibility actions inspect data; zoom and reset actions are also available. `Sparkline` is a compact, noninteractive view.
+
+Pie, donut, and heatmap charts offer selection through taps, keyboard arrows, and accessibility actions. Give each chart a specific `contentDescription`, and keep value formatters short enough for their axis width.
+
+Continue with the [API guide](/jetpack-charts/reference/api/) for state, layers, formatting, and extension points.

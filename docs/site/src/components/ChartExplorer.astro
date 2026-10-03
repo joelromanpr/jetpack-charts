@@ -1,0 +1,112 @@
+---
+const prices = Array.from({ length: 72 }, (_, i) => 182 + i * 0.34 + Math.sin(i * 0.3) * 3.2 + Math.cos(i * 0.9) * 0.7);
+const coordinates = prices.map((value, i) => `${36 + i / 71 * 708},${232 - (value - 176) / 36 * 202}`);
+const line = `M${coordinates.join(' L')}`;
+const lastPrice = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(prices.at(-1)!);
+---
+
+<chart-explorer class="explorer">
+  <div class="explorer-top">
+    <div><p class="eyebrow">THE CHART TOOLKIT</p><h2>Every signal. Clearly.</h2></div>
+    <span class="preview-label">Browser preview · synthetic data</span>
+  </div>
+  <div class="chart-controls" role="group" aria-label="Chart family">
+    <button type="button" data-chart="line" aria-pressed="true">Price line</button>
+    <button type="button" data-chart="candles" aria-pressed="false">Candlesticks</button>
+    <button type="button" data-chart="depth" aria-pressed="false">Market depth</button>
+    <button type="button" data-chart="allocation" aria-pressed="false">Allocation</button>
+  </div>
+  <div class="chart-summary"><div><span data-metric>Price</span><strong data-value>{lastPrice}</strong></div><span data-detail>Point 72 of 72</span></div>
+  <svg viewBox="0 0 780 272" role="img" aria-label={`Synthetic price line. Latest price ${lastPrice}.`}>
+    <g class="grid-lines">{[44, 106, 168, 230].map(y => <line x1="36" y1={y} x2="744" y2={y} />)}</g>
+    <path class="area" d={`${line} L744,250 L36,250 Z`} />
+    <path class="price-line" d={line} />
+  </svg>
+  <div class="chart-inspect">
+    <label>Inspect <input type="range" min="0" max="71" value="71" aria-label="Inspect chart point" /></label>
+    <a data-recipe href={`${import.meta.env.BASE_URL.replace(/\/$/, '')}/getting-started/`}>Build this in Compose <span aria-hidden="true">→</span></a>
+  </div>
+  <p class="explorer-caption" aria-live="polite" data-description>72 price points. Move the slider to inspect a value.</p>
+</chart-explorer>
+
+<script>
+  class ChartExplorer extends HTMLElement {
+    connectedCallback() {
+      const svg = this.querySelector('svg')!;
+      const slider = this.querySelector('input')!;
+      const metric = this.querySelector('[data-metric]')!;
+      const value = this.querySelector('[data-value]')!;
+      const detail = this.querySelector('[data-detail]')!;
+      const description = this.querySelector('[data-description]')!;
+      const recipe = this.querySelector<HTMLAnchorElement>('[data-recipe]')!;
+      const buttons = [...this.querySelectorAll<HTMLButtonElement>('[data-chart]')];
+      const prices = Array.from({ length: 72 }, (_, i) => 182 + i * 0.34 + Math.sin(i * 0.3) * 3.2 + Math.cos(i * 0.9) * 0.7);
+      const slices = [44, 28, 18, 10];
+      const names = ['Equities', 'Cash', 'Bonds', 'Alternatives'];
+      const currency = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' });
+      let family = 'line';
+      const x = (i: number) => 36 + i / 71 * 708;
+      const y = (n: number) => 232 - (n - 176) / 36 * 202;
+      const grid = [44, 106, 168, 230].map(n => `<line x1="36" y1="${n}" x2="744" y2="${n}"/>`).join('');
+      const line = `M${prices.map((p, i) => `${x(i)},${y(p)}`).join(' L')}`;
+
+      const render = () => {
+        const selected = Number(slider.value);
+        const price = prices[selected];
+        let drawing = `<g class="grid-lines">${grid}</g>`;
+        metric.textContent = 'Price';
+        value.textContent = currency.format(price);
+        detail.textContent = `Point ${selected + 1} of 72`;
+        recipe.href = `${import.meta.env.BASE_URL.replace(/\/$/, '')}/getting-started/`;
+        description.textContent = `${family === 'candles' ? 'Candlestick close' : 'Price'} at point ${selected + 1}: ${currency.format(price)}.`;
+        if (family === 'line') {
+          drawing += `<path class="area" d="${line} L744,250 L36,250 Z"/><path class="price-line" d="${line}"/>`;
+        } else if (family === 'candles') {
+          prices.forEach((close, i) => {
+            const open = i === 0 ? 183.4 : prices[i - 1];
+            drawing += `<g class="${close >= open ? 'rising' : 'falling'}"><line x1="${x(i)}" y1="${y(Math.max(open, close) + 1.1)}" x2="${x(i)}" y2="${y(Math.min(open, close) - 0.8)}"/><rect x="${x(i) - 2.7}" y="${Math.min(y(open), y(close))}" width="5.4" height="${Math.max(1.5, Math.abs(y(open) - y(close)))}"/></g>`;
+          });
+          recipe.href = `${import.meta.env.BASE_URL.replace(/\/$/, '')}/guides/trading/`;
+        } else if (family === 'depth') {
+          const bid = Array.from({ length: 25 }, (_, i) => `${36 + i * 14},${52 + i * 8}`);
+          const ask = Array.from({ length: 25 }, (_, i) => `${408 + i * 14},${244 - i * 8}`);
+          drawing += `<path class="bid-area" d="M36,250 L${bid.join(' L')} L372,250 Z"/><path class="ask-area" d="M408,250 L${ask.join(' L')} L744,250 Z"/><path class="price-line" d="M${bid.join(' L')}"/><path class="ask-line" d="M${ask.join(' L')}"/>`;
+          const level = selected - 36;
+          metric.textContent = level < 0 ? 'Bid price' : 'Ask price';
+          value.textContent = currency.format(200 + level * 0.1);
+          detail.textContent = `${(Math.abs(level) + 1) * 120} cumulative units`;
+          description.textContent = `${metric.textContent} ${value.textContent}, ${detail.textContent}.`;
+          recipe.href = `${import.meta.env.BASE_URL.replace(/\/$/, '')}/guides/trading/`;
+        } else {
+          let offset = 0;
+          drawing = slices.map((share, i) => {
+            const segment = `<circle class="allocation-segment segment-${i}${i === selected ? ' selected' : ''}" cx="390" cy="136" r="92" pathLength="100" stroke-dasharray="${share} ${100 - share}" stroke-dashoffset="${-offset}" transform="rotate(-90 390 136)"/>`;
+            offset += share;
+            return segment;
+          }).join('');
+          drawing += `<text class="donut-label" x="390" y="135" text-anchor="middle">ALLOCATION</text><text class="donut-value" x="390" y="164" text-anchor="middle">100%</text>`;
+          metric.textContent = names[selected];
+          value.textContent = `${slices[selected]}%`;
+          detail.textContent = 'Portfolio weight';
+          description.textContent = `${names[selected]} represents ${slices[selected]} percent of this synthetic portfolio.`;
+          recipe.href = `${import.meta.env.BASE_URL.replace(/\/$/, '')}/charts/`;
+        }
+        if (family === 'line' || family === 'candles') {
+          drawing += `<line class="crosshair" x1="${x(selected)}" y1="25" x2="${x(selected)}" y2="250"/><circle class="selected-point" cx="${x(selected)}" cy="${y(price)}" r="5"/>`;
+        }
+        svg.innerHTML = drawing;
+        svg.setAttribute('aria-label', description.textContent ?? 'Synthetic chart preview');
+      };
+      buttons.forEach(button => button.addEventListener('click', () => {
+        family = button.dataset.chart!;
+        buttons.forEach(item => item.setAttribute('aria-pressed', String(item === button)));
+        slider.max = family === 'allocation' ? '3' : '71';
+        slider.value = family === 'allocation' ? '0' : '71';
+        render();
+      }));
+      slider.addEventListener('input', render);
+      render();
+    }
+  }
+  if (!customElements.get('chart-explorer')) customElements.define('chart-explorer', ChartExplorer);
+</script>

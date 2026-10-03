@@ -1,0 +1,78 @@
+---
+title: Light, dark, and brand themes
+description: Apply semantic chart colors and readable axes without a Material dependency.
+---
+
+Wrap charts in `ChartTheme`. Its default follows the system appearance. `ChartColors.light()` and `ChartColors.dark()` provide complete palettes, independent of your application's Material theme.
+
+## Match your brand
+
+This complete wrapper follows the system appearance and overrides the primary series color. Remembering the palette keeps its identity stable across unrelated recompositions.
+
+```kotlin
+import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
+import androidx.compose.ui.graphics.Color
+import com.joelromanpr.charts.compose.ChartColors
+import com.joelromanpr.charts.compose.ChartTheme
+
+@Composable
+fun BrandChartTheme(content: @Composable () -> Unit) {
+    val dark = isSystemInDarkTheme()
+    val colors = remember(dark) {
+        val base = if (dark) ChartColors.dark() else ChartColors.light()
+        val accent = if (dark) Color(0xFF8AC7FF) else Color(0xFF176BC1)
+        base.copy(
+            primary = accent,
+            series = listOf(accent, base.secondary, base.positive, base.negative),
+        )
+    }
+    ChartTheme(colors = colors, content = content)
+}
+```
+
+If your application has its own appearance toggle, pass its dark-mode flag into this wrapper instead of reading the system setting. Keep at least one color in `series`, and pass a new palette when colors change.
+
+## Use semantic colors
+
+`positive` and `negative` color rising and falling candles and bid/ask depth. `text`, `mutedText`, `grid`, `background`, and `surface` control shared chart styling. Explicit layer colors override the palette.
+
+The following chart reads the enclosing theme and gives its line a soft area fill:
+
+```kotlin
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
+import com.joelromanpr.charts.compose.LineChart
+import com.joelromanpr.charts.compose.LocalChartColors
+import com.joelromanpr.charts.core.PointSeries
+
+@Composable
+fun BrandedPriceChart(prices: PointSeries) {
+    val colors = LocalChartColors.current
+    LineChart(
+        series = prices,
+        modifier = Modifier.fillMaxWidth().height(240.dp),
+        color = colors.primary,
+        fill = colors.primary.copy(alpha = 0.12f),
+    )
+}
+```
+
+Call `BrandedPriceChart` inside `BrandChartTheme`. Theme a screen or chart group once so linked panels use consistent colors.
+
+## Keep axes readable
+
+Create `ChartAxes` and its formatters once with `remember`. Supply `AxisFormatter` for prices, percentages, quantities, or dates. `AxisFormatter.decimal()` uses the device locale; custom date formatters own the conversion from your chosen X unit.
+
+Reserve enough `yAxisWidth` and `rightYAxisWidth` for formatted values. Use `ChartAxes.Hidden` for a compact chart without labels or grid, or use `Sparkline` directly.
+
+## Support every reader
+
+- Check text, grid, and selected markers in both palettes at small screen sizes.
+- Pair color with readable labels and values. Give `CartesianChart`, depth, and portfolio charts a useful `contentDescription`.
+- Keep interactive controls large enough to use with touch, keyboard, and accessibility actions.
+- Test your complete screen with large font settings; a chart's palette alone cannot ensure readable surrounding content.
