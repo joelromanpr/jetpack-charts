@@ -66,14 +66,15 @@ fun PriceChart() {
 | --- | --- |
 | Price, area, step, smooth curves | `LineChart`, `Sparkline`, `ChartLayer.Line` |
 | Grouped or stacked columns | `ColumnChart`, `ChartLayer.Columns` |
-| OHLC candles and volume | `CandlestickChart`, `ChartLayer.Candles` |
+| OHLC candles | `CandlestickChart`, `ChartLayer.Candles` |
+| Volume | `ColumnChart`, `ChartLayer.Columns` |
 | Mixed series and independent value scales | `CartesianChart` |
 | Order book liquidity | `DepthChart` |
 | Allocation | `PieChart`, `DonutChart` |
 | Factors and activity | `RadarChart`, `HeatmapChart` |
 | Observations | `ScatterChart` |
 
-Pinch to zoom, drag horizontally to pan, and tap or hold to inspect. Keyboard and accessibility actions support point selection, zoom, and reset. Axis formatters, reference lines, legends, and draw-scope decorations are configurable.
+In cartesian charts, pinch to zoom, drag horizontally to pan, and tap or hold to inspect. Keyboard and accessibility actions support point selection, zoom, and reset. Axis formatters, reference lines, legends, and draw-scope decorations are configurable.
 
 Share a `rememberChartState()` across price, volume, and indicators to link their viewport and crosshair. `Indicators` provides SMA, EMA, RSI, Bollinger bands, MACD, and VWAP.
 
