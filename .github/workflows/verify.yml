@@ -55,6 +55,9 @@ jobs:
           - api: 37
             sdk: '37.2'
             target: google_apis_ps16k
+            profile: pixel_7
+            ram: 4096M
+            options: -no-window -gpu software -no-snapshot -noaudio -no-boot-anim -no-metrics -show-kernel -verbose
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -79,6 +82,9 @@ jobs:
         with:
           api-level: ${{ matrix.sdk || matrix.api }}
           target: ${{ matrix.target || 'google_apis' }}
+          profile: ${{ matrix.profile || '' }}
+          ram-size: ${{ matrix.ram || '' }}
+          emulator-options: ${{ matrix.options || '-no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim' }}
           arch: x86_64
           disk-size: 2048M
           disable-animations: true
