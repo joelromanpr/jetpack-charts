@@ -35,7 +35,7 @@
 .card { border-radius: 1rem; background: var(--chart-surface); }
 chart-explorer { display: block; padding: clamp(1rem, 3vw, 2rem); border: 1px solid var(--sl-color-gray-5); border-radius: 1.25rem; background: var(--chart-surface); }
 .explorer-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem; }
-.explorer-top h2 { margin: .4rem 0 0 !important; font-size: clamp(1.35rem, 3vw, 1.9rem); letter-spacing: -.045em; }
+.explorer-top h2 { margin: .4rem 0 0 !important; color: var(--sl-color-white); font-size: clamp(1.35rem, 3vw, 1.9rem); font-weight: 600; letter-spacing: -.045em; }
 .eyebrow { margin: 0; font-size: .7rem; font-weight: 700; letter-spacing: .14em; color: var(--chart-muted); }
 .preview-label { font-size: .7rem; color: var(--chart-muted); text-align: right; }
 .chart-controls { display: flex; flex-wrap: wrap; gap: .4rem; margin-block: 1.4rem; }
@@ -63,7 +63,7 @@ chart-explorer { display: block; padding: clamp(1rem, 3vw, 2rem); border: 1px so
 .chart-inspect { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 1rem; font-size: .8rem; }
 .chart-inspect label { display: flex; align-items: center; gap: .8rem; color: var(--chart-muted); }
 .chart-inspect input { width: clamp(7rem, 22vw, 14rem); accent-color: var(--sl-color-accent); }
-.chart-inspect a { text-decoration: none; font-weight: 650; }
+.chart-inspect a { color: var(--sl-color-text-accent); text-decoration: none; font-weight: 650; }
 .explorer-caption { margin: .8rem 0 0; font-size: .72rem; color: var(--chart-muted); }
 .sample-gallery { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.5rem; max-width: 43rem; margin: 2rem auto; }
 .sample-gallery figure { margin: 0; min-width: 0; }
