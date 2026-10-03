@@ -1,0 +1,201 @@
+public final class com/joelromanpr/charts/core/BollingerBands {
+	public fun <init> (Lcom/joelromanpr/charts/core/PointSeries;Lcom/joelromanpr/charts/core/PointSeries;Lcom/joelromanpr/charts/core/PointSeries;)V
+	public final fun component1 ()Lcom/joelromanpr/charts/core/PointSeries;
+	public final fun component2 ()Lcom/joelromanpr/charts/core/PointSeries;
+	public final fun component3 ()Lcom/joelromanpr/charts/core/PointSeries;
+	public final fun copy (Lcom/joelromanpr/charts/core/PointSeries;Lcom/joelromanpr/charts/core/PointSeries;Lcom/joelromanpr/charts/core/PointSeries;)Lcom/joelromanpr/charts/core/BollingerBands;
+	public static synthetic fun copy$default (Lcom/joelromanpr/charts/core/BollingerBands;Lcom/joelromanpr/charts/core/PointSeries;Lcom/joelromanpr/charts/core/PointSeries;Lcom/joelromanpr/charts/core/PointSeries;ILjava/lang/Object;)Lcom/joelromanpr/charts/core/BollingerBands;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getLower ()Lcom/joelromanpr/charts/core/PointSeries;
+	public final fun getMiddle ()Lcom/joelromanpr/charts/core/PointSeries;
+	public final fun getUpper ()Lcom/joelromanpr/charts/core/PointSeries;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/joelromanpr/charts/core/Candle {
+	public fun <init> (DDDDDD)V
+	public synthetic fun <init> (DDDDDDILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()D
+	public final fun component2 ()D
+	public final fun component3 ()D
+	public final fun component4 ()D
+	public final fun component5 ()D
+	public final fun component6 ()D
+	public final fun copy (DDDDDD)Lcom/joelromanpr/charts/core/Candle;
+	public static synthetic fun copy$default (Lcom/joelromanpr/charts/core/Candle;DDDDDDILjava/lang/Object;)Lcom/joelromanpr/charts/core/Candle;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getClose ()D
+	public final fun getHigh ()D
+	public final fun getLow ()D
+	public final fun getOpen ()D
+	public final fun getVolume ()D
+	public final fun getX ()D
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/joelromanpr/charts/core/CandleSeries {
+	public fun <init> (Ljava/util/List;Ljava/lang/String;)V
+	public synthetic fun <init> (Ljava/util/List;Ljava/lang/String;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getCandles ()Ljava/util/List;
+	public final fun getName ()Ljava/lang/String;
+	public final fun getSize ()I
+	public fun hashCode ()I
+	public final fun priceRange ()Lcom/joelromanpr/charts/core/ChartRange;
+	public fun toString ()Ljava/lang/String;
+	public final fun xRange ()Lcom/joelromanpr/charts/core/ChartRange;
+}
+
+public final class com/joelromanpr/charts/core/ChartRange {
+	public static final field Companion Lcom/joelromanpr/charts/core/ChartRange$Companion;
+	public fun <init> (DD)V
+	public final fun component1 ()D
+	public final fun component2 ()D
+	public final fun copy (DD)Lcom/joelromanpr/charts/core/ChartRange;
+	public static synthetic fun copy$default (Lcom/joelromanpr/charts/core/ChartRange;DDILjava/lang/Object;)Lcom/joelromanpr/charts/core/ChartRange;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun expanded (D)Lcom/joelromanpr/charts/core/ChartRange;
+	public static synthetic fun expanded$default (Lcom/joelromanpr/charts/core/ChartRange;DILjava/lang/Object;)Lcom/joelromanpr/charts/core/ChartRange;
+	public final fun fractionOf (D)D
+	public final fun getMax ()D
+	public final fun getMin ()D
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+	public final fun valueAt (D)D
+}
+
+public final class com/joelromanpr/charts/core/ChartRange$Companion {
+	public final fun rangeOf (Ljava/lang/Iterable;)Lcom/joelromanpr/charts/core/ChartRange;
+}
+
+public final class com/joelromanpr/charts/core/DepthLevel {
+	public fun <init> (DD)V
+	public final fun component1 ()D
+	public final fun component2 ()D
+	public final fun copy (DD)Lcom/joelromanpr/charts/core/DepthLevel;
+	public static synthetic fun copy$default (Lcom/joelromanpr/charts/core/DepthLevel;DDILjava/lang/Object;)Lcom/joelromanpr/charts/core/DepthLevel;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getPrice ()D
+	public final fun getQuantity ()D
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/joelromanpr/charts/core/Indicators {
+	public static final field INSTANCE Lcom/joelromanpr/charts/core/Indicators;
+	public final fun bollingerBands (Lcom/joelromanpr/charts/core/CandleSeries;ID)Lcom/joelromanpr/charts/core/BollingerBands;
+	public static synthetic fun bollingerBands$default (Lcom/joelromanpr/charts/core/Indicators;Lcom/joelromanpr/charts/core/CandleSeries;IDILjava/lang/Object;)Lcom/joelromanpr/charts/core/BollingerBands;
+	public final fun ema (Lcom/joelromanpr/charts/core/CandleSeries;I)Lcom/joelromanpr/charts/core/PointSeries;
+	public static synthetic fun ema$default (Lcom/joelromanpr/charts/core/Indicators;Lcom/joelromanpr/charts/core/CandleSeries;IILjava/lang/Object;)Lcom/joelromanpr/charts/core/PointSeries;
+	public final fun macd (Lcom/joelromanpr/charts/core/CandleSeries;III)Lcom/joelromanpr/charts/core/MacdResult;
+	public static synthetic fun macd$default (Lcom/joelromanpr/charts/core/Indicators;Lcom/joelromanpr/charts/core/CandleSeries;IIIILjava/lang/Object;)Lcom/joelromanpr/charts/core/MacdResult;
+	public final fun rsi (Lcom/joelromanpr/charts/core/CandleSeries;I)Lcom/joelromanpr/charts/core/PointSeries;
+	public static synthetic fun rsi$default (Lcom/joelromanpr/charts/core/Indicators;Lcom/joelromanpr/charts/core/CandleSeries;IILjava/lang/Object;)Lcom/joelromanpr/charts/core/PointSeries;
+	public final fun sma (Lcom/joelromanpr/charts/core/CandleSeries;I)Lcom/joelromanpr/charts/core/PointSeries;
+	public static synthetic fun sma$default (Lcom/joelromanpr/charts/core/Indicators;Lcom/joelromanpr/charts/core/CandleSeries;IILjava/lang/Object;)Lcom/joelromanpr/charts/core/PointSeries;
+	public final fun vwap (Lcom/joelromanpr/charts/core/CandleSeries;)Lcom/joelromanpr/charts/core/PointSeries;
+}
+
+public final class com/joelromanpr/charts/core/MacdResult {
+	public fun <init> (Lcom/joelromanpr/charts/core/PointSeries;Lcom/joelromanpr/charts/core/PointSeries;Lcom/joelromanpr/charts/core/PointSeries;)V
+	public final fun component1 ()Lcom/joelromanpr/charts/core/PointSeries;
+	public final fun component2 ()Lcom/joelromanpr/charts/core/PointSeries;
+	public final fun component3 ()Lcom/joelromanpr/charts/core/PointSeries;
+	public final fun copy (Lcom/joelromanpr/charts/core/PointSeries;Lcom/joelromanpr/charts/core/PointSeries;Lcom/joelromanpr/charts/core/PointSeries;)Lcom/joelromanpr/charts/core/MacdResult;
+	public static synthetic fun copy$default (Lcom/joelromanpr/charts/core/MacdResult;Lcom/joelromanpr/charts/core/PointSeries;Lcom/joelromanpr/charts/core/PointSeries;Lcom/joelromanpr/charts/core/PointSeries;ILjava/lang/Object;)Lcom/joelromanpr/charts/core/MacdResult;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getHistogram ()Lcom/joelromanpr/charts/core/PointSeries;
+	public final fun getMacd ()Lcom/joelromanpr/charts/core/PointSeries;
+	public final fun getSignal ()Lcom/joelromanpr/charts/core/PointSeries;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/joelromanpr/charts/core/OrderBook {
+	public fun <init> (Ljava/util/List;Ljava/util/List;)V
+	public final fun cumulativeAsks ()Lcom/joelromanpr/charts/core/PointSeries;
+	public final fun cumulativeBids ()Lcom/joelromanpr/charts/core/PointSeries;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getAsks ()Ljava/util/List;
+	public final fun getBids ()Ljava/util/List;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/joelromanpr/charts/core/Point {
+	public fun <init> (DD)V
+	public final fun component1 ()D
+	public final fun component2 ()D
+	public final fun copy (DD)Lcom/joelromanpr/charts/core/Point;
+	public static synthetic fun copy$default (Lcom/joelromanpr/charts/core/Point;DDILjava/lang/Object;)Lcom/joelromanpr/charts/core/Point;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getX ()D
+	public final fun getY ()D
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/joelromanpr/charts/core/PointSeries {
+	public fun <init> (Ljava/util/List;Ljava/lang/String;)V
+	public synthetic fun <init> (Ljava/util/List;Ljava/lang/String;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getName ()Ljava/lang/String;
+	public final fun getPoints ()Ljava/util/List;
+	public final fun getSize ()I
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+	public final fun xRange ()Lcom/joelromanpr/charts/core/ChartRange;
+	public final fun yRange ()Lcom/joelromanpr/charts/core/ChartRange;
+}
+
+public final class com/joelromanpr/charts/core/RollingCandleBuffer {
+	public fun <init> (ILjava/lang/String;)V
+	public synthetic fun <init> (ILjava/lang/String;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun append (Lcom/joelromanpr/charts/core/Candle;)V
+	public final fun clear ()V
+	public final fun getCapacity ()I
+	public final fun getName ()Ljava/lang/String;
+	public final fun getRevision ()J
+	public final fun getSize ()I
+	public final fun replaceLast (Lcom/joelromanpr/charts/core/Candle;)V
+	public final fun snapshot ()Lcom/joelromanpr/charts/core/CandleSeries;
+}
+
+public final class com/joelromanpr/charts/core/RollingPointBuffer {
+	public fun <init> (ILjava/lang/String;)V
+	public synthetic fun <init> (ILjava/lang/String;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun append (Lcom/joelromanpr/charts/core/Point;)V
+	public final fun clear ()V
+	public final fun getCapacity ()I
+	public final fun getName ()Ljava/lang/String;
+	public final fun getRevision ()J
+	public final fun getSize ()I
+	public final fun replaceLast (Lcom/joelromanpr/charts/core/Point;)V
+	public final fun snapshot ()Lcom/joelromanpr/charts/core/PointSeries;
+}
+
+public final class com/joelromanpr/charts/core/SamplingKt {
+	public static final fun decimated (Lcom/joelromanpr/charts/core/PointSeries;I)Lcom/joelromanpr/charts/core/PointSeries;
+	public static final fun nearestCandle (Lcom/joelromanpr/charts/core/CandleSeries;D)Lcom/joelromanpr/charts/core/Candle;
+	public static final fun nearestPoint (Lcom/joelromanpr/charts/core/PointSeries;D)Lcom/joelromanpr/charts/core/Point;
+	public static final fun visibleCandles (Lcom/joelromanpr/charts/core/CandleSeries;DDZ)Ljava/util/List;
+	public static synthetic fun visibleCandles$default (Lcom/joelromanpr/charts/core/CandleSeries;DDZILjava/lang/Object;)Ljava/util/List;
+	public static final fun visiblePoints (Lcom/joelromanpr/charts/core/PointSeries;DDZ)Ljava/util/List;
+	public static synthetic fun visiblePoints$default (Lcom/joelromanpr/charts/core/PointSeries;DDZILjava/lang/Object;)Ljava/util/List;
+}
+
+public final class com/joelromanpr/charts/core/Slice {
+	public fun <init> (Ljava/lang/String;D)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun component2 ()D
+	public final fun copy (Ljava/lang/String;D)Lcom/joelromanpr/charts/core/Slice;
+	public static synthetic fun copy$default (Lcom/joelromanpr/charts/core/Slice;Ljava/lang/String;DILjava/lang/Object;)Lcom/joelromanpr/charts/core/Slice;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getLabel ()Ljava/lang/String;
+	public final fun getValue ()D
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+

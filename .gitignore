@@ -33,3 +33,9 @@ google-services.json
 
 # Android Profiling
 *.hprof
+
+# Publishing credentials and generated release bundles
+.env*
+*.asc
+*.gpg
+outputs/
