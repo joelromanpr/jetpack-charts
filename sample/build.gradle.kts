@@ -14,7 +14,7 @@ android {
         versionCode = 20000
         versionName = providers.gradleProperty("VERSION_NAME").get()
     }
-    buildFeatures { compose = true }
+    buildFeatures { compose = true; buildConfig = true }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
