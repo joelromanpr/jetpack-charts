@@ -1,5 +1,6 @@
 package com.joelromanpr.charts.compose
 
+import android.os.Build
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -204,11 +205,14 @@ class ChartInteractionTest {
         val palette = ChartColors.dark()
         var data by mutableStateOf(HeatmapData(List(200) { "X$it" }, List(200) { "Y$it" }, List(200) { List(200) { 1.0 } }))
         compose.setContent { ChartTheme(palette) { HeatmapChart(data, Modifier.fillMaxWidth().height(240.dp)) } }
-        val pixels = compose.onNodeWithContentDescription("Heatmap").captureToImage().toPixelMap()
-        val actual = pixels[pixels.width / 2, pixels.height / 2]
-        val expected = lerp(palette.surface, palette.primary, 0.5f)
-        assertEquals("Dense cells must retain their fill", expected.red, actual.red, 0.03f)
-        assertEquals(expected.blue, actual.blue, 0.03f)
+        // Compose's pixel capture uses PixelCopy, available from API 26.
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val pixels = compose.onNodeWithContentDescription("Heatmap").captureToImage().toPixelMap()
+            val actual = pixels[pixels.width / 2, pixels.height / 2]
+            val expected = lerp(palette.surface, palette.primary, 0.5f)
+            assertEquals("Dense cells must retain their fill", expected.red, actual.red, 0.03f)
+            assertEquals(expected.blue, actual.blue, 0.03f)
+        }
         action("Heatmap", "Next cell")
         compose.runOnIdle { data = HeatmapData(listOf("Open", "Close"), listOf("Monday"), listOf(listOf(2.0, 4.0))) }
         compose.onNodeWithContentDescription("Heatmap").assert(SemanticsMatcher.expectValue(SemanticsProperties.StateDescription, "1 rows, 2 columns"))
