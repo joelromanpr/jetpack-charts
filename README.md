@@ -95,6 +95,7 @@ Open this project in Android Studio, or use JDK 17 and the checked-in Gradle wra
 ```sh
 ./gradlew :charts-core:test :charts-compose:lintRelease :sample:assembleDebug apiCheck
 ./gradlew :charts-compose:connectedDebugAndroidTest
+python3 scripts/check-device-results.py
 ```
 
-Run `sample` for the interactive gallery and simulated live feed. See [contributing](CONTRIBUTING.md) and the compact [release checklist](docs/RELEASING.md).
+Python 3 verifies executed device tests. Run `sample` for the interactive gallery and simulated live feed. See [contributing](CONTRIBUTING.md) and the compact [release checklist](docs/RELEASING.md).

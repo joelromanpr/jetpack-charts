@@ -5,7 +5,7 @@ description: Set up the project, validate a focused change, and submit a pull re
 
 ## Set up
 
-Fork [the repository](https://github.com/joelromanpr/jetpack-charts), clone your fork, and open it in Android Studio. Use **JDK 17** and **Android SDK 37**; the checked-in Gradle wrapper handles Gradle.
+Fork [the repository](https://github.com/joelromanpr/jetpack-charts), clone your fork, and open it in Android Studio. Use **JDK 17**, **Android SDK 37**, and **Python 3** for verification helpers; the checked-in wrapper handles Gradle.
 
 ```sh
 git switch -c feat/price-marker
@@ -32,6 +32,7 @@ Preserve API 23 compatibility, light and dark themes, and bounded rendering work
 ./gradlew :charts-core:test :charts-compose:testDebugUnitTest \
   :charts-compose:lintRelease :sample:lintDebug :sample:assembleDebug apiCheck
 ./gradlew :charts-compose:connectedDebugAndroidTest
+python3 scripts/check-device-results.py
 ```
 
 Use Conventional Commits, for example `feat: add a price marker` or `docs: clarify linked charts`. Explain the user-visible change and relevant validation in your pull request. Maintainers squash merge after required CI checks pass; `main` stays protected.

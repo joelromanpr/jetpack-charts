@@ -58,6 +58,12 @@ jobs:
             profile: pixel_7
             ram: 4096M
             options: -no-window -gpu software -no-snapshot -noaudio -no-boot-anim -no-metrics -verbose -logcat '*:e'
+            launch: |
+              for config in "$HOME/.android/avd/test.ini" "$HOME/.android/avd/test.avd/config.ini"; do
+                rg '^target=' "$config"
+                rg -q '^target=android-37(\.2)?(-ext[0-9]+)?$' "$config"
+              done
+              rg '^image.sysdir.1=' "$HOME/.android/avd/test.avd/config.ini"
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -68,6 +74,11 @@ jobs:
           distribution: temurin
           java-version: '17'
       - uses: gradle/actions/setup-gradle@3f5f9adaf7d9fecd50b5935e54106014257a94e6 # v6.4.0
+      - name: Update Android command-line tools
+        run: |
+          sdkmanager --install 'cmdline-tools;latest'
+          echo "$ANDROID_HOME/cmdline-tools/latest/bin" >> "$GITHUB_PATH"
+          "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --version
       - name: Reserve emulator disk space
         run: |
           du -sh /usr/share/dotnet
@@ -85,10 +96,13 @@ jobs:
           profile: ${{ matrix.profile || '' }}
           ram-size: ${{ matrix.ram || '' }}
           emulator-options: ${{ matrix.options || '-no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim' }}
+          pre-emulator-launch-script: ${{ matrix.launch || '' }}
           arch: x86_64
           disk-size: 2048M
           disable-animations: true
           script: ./gradlew :charts-compose:connectedDebugAndroidTest
+      - name: Verify device test execution
+        run: python3 scripts/check-device-results.py
       - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         if: always()
         with:
