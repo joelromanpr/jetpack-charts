@@ -16,7 +16,7 @@ dependencies {
     testImplementation(libs.junit)
 }
 
-val benchmark by sourceSets.creating {
+val benchmark = sourceSets.create("benchmark") {
     compileClasspath += sourceSets.main.get().output
     runtimeClasspath += sourceSets.main.get().output
 }

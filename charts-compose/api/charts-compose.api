@@ -48,6 +48,7 @@ public final class com/joelromanpr/charts/compose/ChartAnimation$Reveal : com/jo
 public final class com/joelromanpr/charts/compose/ChartAxes {
 	public static final field $stable I
 	public static final field Companion Lcom/joelromanpr/charts/compose/ChartAxes$Companion;
+	public fun <init> ()V
 	public synthetic fun <init> (ZZZILcom/joelromanpr/charts/compose/AxisFormatter;Lcom/joelromanpr/charts/compose/AxisFormatter;Landroidx/compose/ui/text/TextStyle;FFZLcom/joelromanpr/charts/compose/AxisFormatter;FILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public synthetic fun <init> (ZZZILcom/joelromanpr/charts/compose/AxisFormatter;Lcom/joelromanpr/charts/compose/AxisFormatter;Landroidx/compose/ui/text/TextStyle;FFZLcom/joelromanpr/charts/compose/AxisFormatter;FLkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public final fun component1 ()Z

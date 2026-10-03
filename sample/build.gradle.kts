@@ -1,16 +1,15 @@
 plugins {
     alias(libs.plugins.android.application)
-    alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
 }
 
 android {
     namespace = "com.joelromanpr.charts.sample"
-    compileSdk = 36
+    compileSdk = 37
     defaultConfig {
         applicationId = "com.joelromanpr.charts.sample"
         minSdk = 23
-        targetSdk = 36
+        targetSdk = 37
         versionCode = 20000
         versionName = providers.gradleProperty("VERSION_NAME").get()
     }
