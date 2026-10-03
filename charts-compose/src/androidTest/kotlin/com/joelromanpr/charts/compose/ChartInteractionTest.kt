@@ -195,6 +195,7 @@ class ChartInteractionTest {
                 description.contains("$50.0") && description.contains("100100.0 shares")
             },
         )
+        compose.waitUntil(5_000) { leftRange != null && rightRange != null }
         compose.runOnIdle {
             assertTrue(leftRange!!.max < 100.0)
             assertTrue(rightRange!!.max > 100_000.0)
