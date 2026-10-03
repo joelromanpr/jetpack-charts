@@ -115,7 +115,7 @@ private fun Gallery(foreground: Boolean, onThemeChanged: (Boolean) -> Unit) {
                                 }
                                 Column(Modifier.weight(1f).padding(start = 12.dp)) {
                                     Text("Jetpack Charts", fontWeight = FontWeight.Bold, style = MaterialTheme.typography.titleLarge)
-                                    Text("COMPOSE · 2.0.0", color = palette.mutedText, style = MaterialTheme.typography.labelSmall)
+                                    Text("COMPOSE · ${BuildConfig.VERSION_NAME}", color = palette.mutedText, style = MaterialTheme.typography.labelSmall)
                                 }
                                 Switch(checked = dark, onCheckedChange = { dark = it }, modifier = Modifier.semantics { contentDescription = "Dark theme" })
                             }

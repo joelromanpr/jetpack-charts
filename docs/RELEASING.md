@@ -12,4 +12,4 @@ Maven group: `io.github.joelromanpr.charts`, under the account's verified namesp
 
 For local packaging without credentials, run `./gradlew stageRelease`. The review bundle is created under ignored `outputs/releases/`; it is unsigned and cannot be uploaded as a completed Central release. Signing and Portal access are verified only by a successful staging run.
 
-After release, advance `VERSION_NAME` to the next `-SNAPSHOT` on `main`; continue through short-lived branches and pull requests.
+After cutting the release tag, advance `VERSION_NAME` to the next `-SNAPSHOT` on `main`; publication uses the frozen tag. Continue through short-lived branches and pull requests.
