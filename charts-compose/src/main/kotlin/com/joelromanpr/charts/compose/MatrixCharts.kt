@@ -51,6 +51,7 @@ import kotlin.math.PI
 import kotlin.math.cos
 import kotlin.math.min
 import kotlin.math.sin
+import kotlin.math.roundToInt
 
 @Immutable
 public class RadarSeries(
@@ -184,10 +185,27 @@ public fun HeatmapChart(
             val scale = maxOf(kotlin.math.abs(minimum), kotlin.math.abs(maximum), 1.0)
             val span = maximum / scale - minimum / scale
             // Dense matrices aggregate to pixel-sized tiles instead of drawing invisible cells.
-            val drawRows = if (count > 0) minOf(rows, maxOf(1, kotlin.math.ceil(height).toInt())) else 0
-            val drawColumns = if (count > 0) minOf(columns, maxOf(1, kotlin.math.ceil(width).toInt())) else 0
+            val drawRows = if (count > 0) minOf(rows, maxOf(1, height.toInt())) else 0
+            val drawColumns = if (count > 0) minOf(columns, maxOf(1, width.toInt())) else 0
             val tileWidth = if (drawColumns > 0) width / drawColumns else 0f
             val tileHeight = if (drawRows > 0) height / drawRows else 0f
+            val dense = minOf(tileWidth, tileHeight) < 8.dp.toPx()
+            val gap = if (dense) 0f else minOf(2.dp.toPx(), tileWidth * 0.12f, tileHeight * 0.12f)
+            // Shared pixel edges avoid antialiasing seams between dense fills.
+            val xEdges = FloatArray(drawColumns + 1) { column ->
+                when (column) {
+                    0 -> origin
+                    drawColumns -> size.width
+                    else -> (origin + column * tileWidth).roundToInt().toFloat()
+                }
+            }
+            val yEdges = FloatArray(drawRows + 1) { row ->
+                when (row) {
+                    0 -> 0f
+                    drawRows -> height
+                    else -> (row * tileHeight).roundToInt().toFloat()
+                }
+            }
             val fills = List(drawRows) { row -> List(drawColumns) { column ->
                 val firstRow = (row.toLong() * rows / drawRows).toInt()
                 val lastRow = ((row + 1L) * rows / drawRows).toInt()
@@ -214,9 +232,12 @@ public fun HeatmapChart(
             onDrawBehind {
                 if (width <= 0f || height <= 0f || count == 0) return@onDrawBehind
                 clipRect(origin, 0f, size.width, height) {
-                    val gap = minOf(2.dp.toPx(), tileWidth * 0.12f, tileHeight * 0.12f)
                     fills.forEachIndexed { row, colors -> colors.forEachIndexed { column, color ->
-                        drawRect(color, Offset(origin + column * tileWidth, row * tileHeight), Size(tileWidth - gap, tileHeight - gap))
+                        val topLeft = if (dense) Offset(xEdges[column], yEdges[row])
+                            else Offset(origin + column * tileWidth, row * tileHeight)
+                        val tileSize = if (dense) Size(xEdges[column + 1] - xEdges[column], yEdges[row + 1] - yEdges[row])
+                            else Size(tileWidth - gap, tileHeight - gap)
+                        drawRect(color, topLeft, tileSize)
                     } }
                     val selection = selectedState.intValue
                     if (selection in 0 until count) {
