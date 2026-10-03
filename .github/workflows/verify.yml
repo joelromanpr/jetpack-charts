@@ -59,11 +59,11 @@ jobs:
             ram: 4096M
             options: -no-window -gpu software -no-snapshot -noaudio -no-boot-anim -no-metrics -verbose -logcat '*:e'
             launch: |
-              for config in "$HOME/.android/avd/test.ini" "$HOME/.android/avd/test.avd/config.ini"; do
-                rg '^target=' "$config"
-                rg -q '^target=android-37(\.2)?(-ext[0-9]+)?$' "$config"
-              done
+              rg '^target=' "$HOME/.android/avd/test.ini" "$HOME/.android/avd/test.avd/config.ini"
+              rg -q '^target=android-37(\.2)?(-ext[0-9]+)?$' "$HOME/.android/avd/test.ini"
+              rg -q '^target=android-37(\.2)?(-ext[0-9]+)?$' "$HOME/.android/avd/test.avd/config.ini"
               rg '^image.sysdir.1=' "$HOME/.android/avd/test.avd/config.ini"
+              rg -q '^image.sysdir.1=.*system-images/android-37\.2/google_apis_ps16k/x86_64/?$' "$HOME/.android/avd/test.avd/config.ini"
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -76,7 +76,9 @@ jobs:
       - uses: gradle/actions/setup-gradle@3f5f9adaf7d9fecd50b5935e54106014257a94e6 # v6.4.0
       - name: Update Android command-line tools
         run: |
-          "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --install 'cmdline-tools;latest'
+          sdk_bootstrap="$RUNNER_TEMP/android-command-line-tools"
+          mv "$ANDROID_HOME/cmdline-tools/latest" "$sdk_bootstrap"
+          "$sdk_bootstrap/bin/sdkmanager" --sdk_root="$ANDROID_HOME" --install 'cmdline-tools;latest'
           echo "$ANDROID_HOME/cmdline-tools/latest/bin" >> "$GITHUB_PATH"
           "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --version
       - name: Reserve emulator disk space
