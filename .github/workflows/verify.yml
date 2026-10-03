@@ -57,7 +57,7 @@ jobs:
             target: google_apis_ps16k
             profile: pixel_7
             ram: 4096M
-            options: -no-window -gpu software -no-snapshot -noaudio -no-boot-anim -no-metrics -show-kernel -verbose
+            options: -no-window -gpu software -no-snapshot -noaudio -no-boot-anim -no-metrics -show-kernel -verbose -logcat '*:e'
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
