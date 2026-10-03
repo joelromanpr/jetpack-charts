@@ -51,6 +51,10 @@ jobs:
       fail-fast: false
       matrix:
         api: [23, 36, 37]
+        include:
+          - api: 37
+            sdk: '37.2'
+            target: google_apis_ps16k
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -73,8 +77,8 @@ jobs:
           sudo udevadm trigger --name-match=kvm
       - uses: reactivecircus/android-emulator-runner@a421e43855164a8197daf9d8d40fe71c6996bb0d # v2.38.0
         with:
-          api-level: ${{ matrix.api }}
-          target: google_apis
+          api-level: ${{ matrix.sdk || matrix.api }}
+          target: ${{ matrix.target || 'google_apis' }}
           arch: x86_64
           disk-size: 2048M
           disable-animations: true
