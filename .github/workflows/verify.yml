@@ -38,7 +38,7 @@ jobs:
           :charts-compose:lintRelease :sample:lintDebug :sample:assembleDebug apiCheck
           :charts-core:generatePomFileForMavenPublication :charts-compose:generatePomFileForMavenPublication
       - run: python3 scripts/check-poms.py
-      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         if: always()
         with:
           name: build-reports
@@ -107,7 +107,7 @@ jobs:
             ./gradlew :charts-compose:connectedDebugAndroidTest
       - name: Verify device test execution
         run: python3 scripts/check-device-results.py
-      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         if: always()
         with:
           name: device-reports-api-${{ matrix.api }}
